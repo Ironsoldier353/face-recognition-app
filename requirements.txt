@@ -1,4 +1,7 @@
-libgl1
+streamlit
+opencv-python
+torch
+facenet-pytorch
 streamlit>=1.21.0
 opencv-python>=4.6.0
 torch>=2.0.0
