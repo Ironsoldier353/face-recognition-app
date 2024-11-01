@@ -5,6 +5,8 @@ import numpy as np
 from facenet_pytorch import MTCNN, InceptionResnetV1
 from scipy.spatial.distance import cosine
 from PIL import Image
+import pygame  # Import pygame for sound playback
+import time
 
 # Initialize face detector and recognizer
 mtcnn = MTCNN(keep_all=False)
@@ -23,6 +25,15 @@ def extract_embedding(image):
         return None
     face_embedding = model(face.unsqueeze(0))
     return face_embedding
+
+# Function to play sound
+def play_sound(file_path):
+    pygame.mixer.init()
+    pygame.mixer.music.load(file_path)
+    pygame.mixer.music.play()
+
+# Initialize the last play time
+last_play_time = time.time()
 
 # Once the user uploads an image
 if uploaded_image:
@@ -57,9 +68,16 @@ if uploaded_image:
                     current_embedding = current_embedding.view(-1)
                     similarity = 1 - cosine(reference_embedding.detach().numpy(), current_embedding.detach().numpy())
 
+                    # Check if similarity is greater than the threshold
                     if similarity > 0.7:
                         label = f"Verified: {similarity:.2f}"
                         color = (0, 255, 0)
+
+                        # Check if enough time has passed to play sound
+                        current_time = time.time()
+                        if current_time - last_play_time >= 3:  # Play sound every 5 seconds
+                            play_sound(r'J:\projects\face-recognition-app\message-incoming-132126.mp3')
+                            last_play_time = current_time  # Update last play time
                     else:
                         label = f"Not Verified: {similarity:.2f}"
                         color = (0, 0, 255)
